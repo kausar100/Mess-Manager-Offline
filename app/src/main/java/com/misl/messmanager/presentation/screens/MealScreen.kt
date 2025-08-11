@@ -50,7 +50,15 @@ fun MealScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Daily Meal Entry") }) }
+        topBar = {
+            TopAppBar(title = { Text("Daily Meal Entry") }, actions = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }, Modifier.padding(end = 16.dp)) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+                }
+            })
+        }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             DateSelector(
@@ -97,14 +105,20 @@ fun DateSelector(
     onNextClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = onPreviousClick) {
             Icon(Icons.Default.PlayArrow, contentDescription = "Previous Day")
         }
-        Text(text = selectedDate, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(
+            text = selectedDate,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
         IconButton(onClick = onNextClick) {
             Icon(Icons.Default.PlayArrow, contentDescription = "Next Day")
         }

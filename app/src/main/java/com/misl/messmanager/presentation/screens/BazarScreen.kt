@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,7 +33,15 @@ fun BazarScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Monthly Bazar") }
+                title = { Text("Monthly Bazar")}
+                ,
+                actions = {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }, Modifier.padding(end = 16.dp)) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+                    }
+                }
             )
         },
         floatingActionButton = {

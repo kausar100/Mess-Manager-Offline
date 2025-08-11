@@ -19,4 +19,5 @@ sealed class MemberEvent {
     data class ConfirmAddMember(val name: String, val phone: String, val amount: Double) : MemberEvent()
     data object ShowAddMemberDialog : MemberEvent()
     data object DismissAllDialogs : MemberEvent()
+    data class DeleteMember(val member: Member) : MemberEvent()
 }

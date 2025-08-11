@@ -12,6 +12,8 @@ interface MessRepository {
     fun getAllMembers(): Flow<List<Member>>
     suspend fun addMember(member: Member) : Long
     suspend fun updateMember(member: Member)
+    suspend fun deleteMember(member: Member)
+
     suspend fun addDeposit(deposit: Deposit)
     fun getDepositsForMember(memberId: Int): Flow<List<Deposit>>
     suspend fun addMemberWithInitialDeposit(name: String, contact: String, amount: Double)

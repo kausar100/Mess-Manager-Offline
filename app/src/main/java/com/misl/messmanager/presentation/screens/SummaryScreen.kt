@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -57,7 +55,15 @@ fun SummaryScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Monthly Summary") }) }
+        topBar = {
+            TopAppBar(title = { Text("Monthly Summary") }, actions = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }, Modifier.padding(end = 16.dp)) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+                }
+            })
+        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -100,7 +106,13 @@ fun MonthSelector(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = { onMonthChange(-1) }) {
-            Icon(Icons.Default.Send, contentDescription = "Previous Month", modifier = Modifier.size(24.dp).rotate(180f))
+            Icon(
+                Icons.Default.Send,
+                contentDescription = "Previous Month",
+                modifier = Modifier
+                    .size(24.dp)
+                    .rotate(180f)
+            )
         }
         Text(
             text = selectedMonth.format(formatter),

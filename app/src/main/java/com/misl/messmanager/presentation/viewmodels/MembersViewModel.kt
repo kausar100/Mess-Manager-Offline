@@ -81,6 +81,14 @@ class MembersViewModel @Inject constructor(
                     )
                 }
             }
+
+            is MemberEvent.DeleteMember -> {
+                viewModelScope.launch {
+                    repository.deleteMember(event.member)
+                }
+                // Dismiss any open dialogs after deletion
+                onEvent(MemberEvent.DismissAllDialogs)
+            }
         }
     }
 

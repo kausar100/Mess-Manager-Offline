@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,14 +32,24 @@ fun UtilityScreen(
     var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Utility Costs for August") }) }, // You can make the month dynamic
+        topBar = {
+            TopAppBar(title = { Text("Utility Costs for August") }, actions = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }, Modifier.padding(end = 16.dp)) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+                }
+            })
+        }, // You can make the month dynamic
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Utility Bill")
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
+        Column(modifier = Modifier
+            .padding(padding)
+            .padding(16.dp)) {
             TotalCostCard(totalAmount = state.totalCost)
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -67,7 +78,9 @@ fun UtilityScreen(
 fun TotalCostCard(totalAmount: Double) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("Total Utility Cost", style = MaterialTheme.typography.titleMedium)
@@ -87,7 +100,11 @@ fun UtilityBillItem(bill: UtilityBill, onDelete: () -> Unit) {
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(bill.name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                bill.name,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge
+            )
             Text("%.2f".format(bill.amount), fontWeight = FontWeight.SemiBold)
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete Bill", tint = Color.Red)

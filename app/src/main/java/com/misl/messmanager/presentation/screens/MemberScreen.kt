@@ -10,12 +10,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -39,15 +42,23 @@ fun MemberScreen(
     viewModel: MembersViewModel = androidx.hilt.navigation.compose.hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val members by viewModel.members.collectAsStateWithLifecycle()
-    var showAddDialog by remember { mutableStateOf(false) }
+    var memberToDelete by remember { mutableStateOf<Member?>(null) }
 
-    // Note: The "Add Member" dialog from your previous code would be launched separately
-    // This example focuses on the new "Member Details" dialog
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Members") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Members") },
+                // The back arrow was moved inside the NavHost in previous examples.
+                // If you want it here, this is fine. Otherwise, it can be removed.
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showAddDialog = true }) {
+            FloatingActionButton(onClick = { viewModel.onEvent(MemberEvent.ShowAddMemberDialog) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Member")
             }
         }
@@ -60,32 +71,73 @@ fun MemberScreen(
             items(state.members) { member ->
                 MemberItem(
                     member = member,
-                    onClick = { viewModel.onMemberClick(member) }
+                    onClick = { viewModel.onEvent(MemberEvent.MemberClicked(member)) }
                 )
             }
         }
     }
 
-    if (showAddDialog) {
+    if (state.isAddMemberDialogShown) {
         AddMemberDialog(
             onDismiss = {
                 viewModel.onEvent(MemberEvent.DismissAllDialogs)
-                showAddDialog = false
             },
             onConfirm = { name, contact, amount ->
                 viewModel.onEvent(MemberEvent.ConfirmAddMember(name, contact, amount))
-                showAddDialog = false
             }
         )
     }
 
-    if (state.isDetailDialogShown) {
+    if (state.isDetailDialogShown && state.selectedMember != null) {
         MemberDetailDialog(
             state = state,
             onDismiss = { viewModel.onEvent(MemberEvent.DismissAllDialogs) },
-            onAddDeposit = { viewModel.onEvent(MemberEvent.AddDeposit(it)) }
+            onAddDeposit = { viewModel.onEvent(MemberEvent.AddDeposit(it)) },
+            onDelete = { memberToDelete = state.selectedMember }
         )
     }
+
+    // The confirmation dialog logic remains the same.
+    memberToDelete?.let { member ->
+        ConfirmationDialog(
+            title = "Delete Member",
+            text = "Are you sure you want to delete ${member.name}? All of their data will be permanently removed.",
+            onConfirm = {
+                viewModel.onEvent(MemberEvent.DeleteMember(member))
+                memberToDelete = null
+            },
+            onDismiss = {
+                memberToDelete = null
+            }
+        )
+    }
+}
+
+@Composable
+fun ConfirmationDialog(
+    title: String,
+    text: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(text) },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            ) {
+                Text("Delete")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 
@@ -218,7 +270,8 @@ fun MemberItem(member: Member, onClick: () -> Unit) {
 fun MemberDetailDialog(
     state: MemberScreenState,
     onDismiss: () -> Unit,
-    onAddDeposit: (Double) -> Unit
+    onAddDeposit: (Double) -> Unit,
+    onDelete: () -> Unit
 ) {
     var depositAmount by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -293,8 +346,25 @@ fun MemberDetailDialog(
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                    Text("Close")
+                // This is the new part for the action buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Delete Button
+                    TextButton(
+                        onClick = onDelete,
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        Spacer(Modifier.width(4.dp))
+                        Text("Delete")
+                    }
+                    // Close Button
+                    TextButton(onClick = onDismiss) {
+                        Text("Close")
+                    }
                 }
             }
         }
