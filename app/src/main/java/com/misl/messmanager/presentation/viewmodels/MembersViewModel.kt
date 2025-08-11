@@ -25,12 +25,6 @@ class MembersViewModel @Inject constructor(
     val members = repository.getAllMembers()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun addMember(name: String, phone: String, deposit: Double) {
-        viewModelScope.launch {
-            repository.addMember(Member(name = name, contact = phone, givenAmount = deposit))
-        }
-    }
-
     init {
         viewModelScope.launch {
             repository.getAllMembers().collect { members ->
@@ -89,38 +83,6 @@ class MembersViewModel @Inject constructor(
                 // Dismiss any open dialogs after deletion
                 onEvent(MemberEvent.DismissAllDialogs)
             }
-        }
-    }
-
-    fun onMemberClick(member: Member) {
-        _state.update { it.copy(selectedMember = member, isDetailDialogShown = true) }
-        // Cancel any previous job to avoid race conditions
-        depositJob?.cancel()
-        // Start collecting deposits for the newly selected member
-        depositJob = viewModelScope.launch {
-            repository.getDepositsForMember(member.id).collect { deposits ->
-                _state.update { it.copy(depositsForSelectedMember = deposits) }
-            }
-        }
-    }
-
-    fun onDismissDialog() {
-        depositJob?.cancel()
-        _state.update { it.copy(isDetailDialogShown = false, selectedMember = null, depositsForSelectedMember = emptyList()) }
-    }
-
-    fun addDeposit(amount: Double) {
-        val member = _state.value.selectedMember ?: return
-        if (amount <= 0) return
-
-        viewModelScope.launch {
-            // 1. Create the new deposit record
-            val newDeposit = Deposit(memberId = member.id, amount = amount)
-            repository.addDeposit(newDeposit)
-
-            // 2. Update the member's total deposit amount
-            val updatedMember = member.copy(givenAmount = member.givenAmount + amount)
-            repository.updateMember(updatedMember)
         }
     }
 }

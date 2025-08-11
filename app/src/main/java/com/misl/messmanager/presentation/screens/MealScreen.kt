@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
@@ -80,9 +79,9 @@ fun MealScreen(
                             getCheckedState = { mealType ->
                                 val meal = state.mealsForDate[member.id]
                                 when (mealType) {
-                                    MealType.BREAKFAST -> meal?.breakfast ?: 0.0 > 0.0
-                                    MealType.LUNCH -> meal?.lunch ?: 0.0 > 0.0
-                                    MealType.DINNER -> meal?.dinner ?: 0.0 > 0.0
+                                    MealType.BREAKFAST -> (meal?.breakfast ?: 0.0) > 0.0
+                                    MealType.LUNCH -> (meal?.lunch ?: 0.0) > 0.0
+                                    MealType.DINNER -> (meal?.dinner ?: 0.0) > 0.0
                                 }
                             },
                             onMealToggle = { mealType, isChecked ->

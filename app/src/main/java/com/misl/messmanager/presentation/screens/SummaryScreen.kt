@@ -21,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -72,7 +73,7 @@ fun SummaryScreen(
                 selectedMonth = state.selectedMonth,
                 onMonthChange = { viewModel.onEvent(SummaryEvent.ChangeMonth(it)) }
             )
-            Divider()
+            HorizontalDivider()
 
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -188,7 +189,7 @@ fun MemberReportCard(report: MemberReport) {
             ReportRow("Total Meals:", "%.1f".format(report.totalMeal))
             ReportRow("Meal Cost:", "(-%.2f Tk)".format(report.mealCost))
             ReportRow("Utility Share:", "(-%.2f Tk)".format(report.utilityShare))
-            Divider(modifier = Modifier.padding(vertical = 4.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
