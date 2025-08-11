@@ -32,7 +32,7 @@ class BazarViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = BazarState(isLoading = true) // Start with a loading state
+            initialValue = BazarState() // Start with a loading state
         )
 
 

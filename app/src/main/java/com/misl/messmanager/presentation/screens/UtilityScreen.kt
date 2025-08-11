@@ -33,11 +33,9 @@ fun UtilityScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Utility Costs for August") }, actions = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }, Modifier.padding(end = 16.dp)) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+            TopAppBar(title = { Text("Utility Costs") }, navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             })
         }, // You can make the month dynamic
@@ -47,9 +45,11 @@ fun UtilityScreen(
             }
         }
     ) { padding ->
-        Column(modifier = Modifier
-            .padding(padding)
-            .padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+        ) {
             TotalCostCard(totalAmount = state.totalCost)
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -56,11 +56,9 @@ fun SummaryScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Monthly Summary") }, actions = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }, Modifier.padding(end = 16.dp)) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+            TopAppBar(title = { Text("Monthly Summary") },  navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             })
         }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,19 +36,16 @@ fun BazarScreen(
             TopAppBar(
                 title = { Text("Monthly Bazar")}
                 ,
-                actions = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }, Modifier.padding(end = 16.dp)) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
-                // Icon(Icons.Default.Add, contentDescription = "Add Bazar")
-                Text("+")
+                 Icon(Icons.Default.Add, contentDescription = "Add Bazar")
             }
         }
     ) { padding ->
@@ -61,7 +59,11 @@ fun BazarScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(state.bazarList) { bazarItem ->
+                // This is the line to change
+                items(
+                    items = state.bazarList,
+                    key = { bazarItem -> bazarItem.id } // <-- ADD THIS KEY PARAMETER
+                ) { bazarItem ->
                     BazarListItem(item = bazarItem)
                     Spacer(modifier = Modifier.height(8.dp))
                 }

@@ -51,11 +51,9 @@ fun MealScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Daily Meal Entry") }, actions = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }, Modifier.padding(end = 16.dp)) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "back-button")
+            TopAppBar(title = { Text("Daily Meal Entry") },  navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             })
         }
