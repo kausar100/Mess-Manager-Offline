@@ -10,9 +10,19 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessDao {
-    // Member Operations
+    // 1. Modify insertMember to return the ID of the new row
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMember(member: Member)
+    suspend fun insertMember(member: Member): Long
+
+
+    // 2. Create a new @Transaction function
+    @Transaction
+    suspend fun addMemberWithInitialDeposit(member: Member, deposit: Deposit) {
+        // Insert the member and get their new auto-generated ID
+        val memberId = insertMember(member)
+        // Use the new ID to create the corresponding deposit record
+        insertDeposit(deposit.copy(memberId = memberId.toInt()))
+    }
 
     @Delete
     suspend fun deleteMember(member: Member)

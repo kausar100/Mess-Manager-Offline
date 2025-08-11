@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.Flow
 interface MessRepository {
     // Member functions
     fun getAllMembers(): Flow<List<Member>>
-    suspend fun addMember(member: Member)
+    suspend fun addMember(member: Member) : Long
     suspend fun updateMember(member: Member)
     suspend fun addDeposit(deposit: Deposit)
     fun getDepositsForMember(memberId: Int): Flow<List<Deposit>>
+    suspend fun addMemberWithInitialDeposit(name: String, contact: String, amount: Double)
+
 
     suspend fun saveUtilityBill(bill: UtilityBill)
     suspend fun deleteUtilityBill(bill: UtilityBill)

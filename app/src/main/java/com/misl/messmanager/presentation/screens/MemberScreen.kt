@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.misl.messmanager.data.local.entity.Deposit
 import com.misl.messmanager.data.local.entity.Member
+import com.misl.messmanager.presentation.states.MemberEvent
 import com.misl.messmanager.presentation.states.MemberScreenState
 import com.misl.messmanager.presentation.viewmodels.MembersViewModel
 import java.text.SimpleDateFormat
@@ -44,7 +47,7 @@ fun MemberScreen(
         topBar = { TopAppBar(title = { Text("Members") }) },
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
-                 Icon(Icons.Default.Add, contentDescription = "Add Member")
+                Icon(Icons.Default.Add, contentDescription = "Add Member")
             }
         }
     ) { padding ->
@@ -64,9 +67,12 @@ fun MemberScreen(
 
     if (showAddDialog) {
         AddMemberDialog(
-            onDismiss = { showAddDialog = false },
-            onConfirm = { name, phone, deposit ->
-                viewModel.addMember(name, phone, deposit)
+            onDismiss = {
+                viewModel.onEvent(MemberEvent.DismissAllDialogs)
+                showAddDialog = false
+            },
+            onConfirm = { name, contact, amount ->
+                viewModel.onEvent(MemberEvent.ConfirmAddMember(name, contact, amount))
                 showAddDialog = false
             }
         )
@@ -75,8 +81,8 @@ fun MemberScreen(
     if (state.isDetailDialogShown) {
         MemberDetailDialog(
             state = state,
-            onDismiss = viewModel::onDismissDialog,
-            onAddDeposit = viewModel::addDeposit
+            onDismiss = { viewModel.onEvent(MemberEvent.DismissAllDialogs) },
+            onAddDeposit = { viewModel.onEvent(MemberEvent.AddDeposit(it)) }
         )
     }
 }
@@ -153,20 +159,40 @@ fun MemberItem(member: Member, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = member.name, style = MaterialTheme.typography.bodyLarge)
-            Spacer(Modifier.width(16.dp))
-            Text(
-                text = "Total Deposit: %.2f Tk".format(member.givenAmount),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
+        ListItem(
+            // 1. A leading icon makes the list more engaging
+            leadingContent = {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Member Icon",
+                    modifier = Modifier.size(40.dp)
+                )
+            },
+            // 2. Headline for the most important info (the name)
+            headlineContent = {
+                Text(
+                    text = member.name,
+                    fontWeight = FontWeight.SemiBold
+                )
+            },
+            // 3. Supporting text for secondary info
+            supportingContent = {
+                Text(
+                    text = "Total Deposit: %.2f Tk".format(member.givenAmount),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            // 4. A trailing icon clearly shows it's a clickable link
+            trailingContent = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "View Details"
+                )
+            }
+        )
     }
 }
 

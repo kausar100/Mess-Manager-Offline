@@ -15,7 +15,13 @@ class MessRepositoryImpl @Inject constructor(
 ) : MessRepository {
     // Implement all the functions from the interface by calling the corresponding DAO methods
     override fun getAllMembers(): Flow<List<Member>> = dao.getAllMembers()
-    override suspend fun addMember(member: Member) = dao.insertMember(member)
+    override suspend fun addMember(member: Member): Long = dao.insertMember(member)
+
+    override suspend fun addMemberWithInitialDeposit(name: String, contact: String, amount: Double) {
+        val member = Member(name = name, contact = contact, givenAmount = amount)
+        val deposit = Deposit(memberId = 0, amount = amount, description = "Initial Deposit") // memberId is a placeholder
+        dao.addMemberWithInitialDeposit(member, deposit)
+    }
 
     override suspend fun updateMember(member: Member) = dao.updateMember(member)
     override suspend fun addDeposit(deposit: Deposit) = dao.insertDeposit(deposit)
