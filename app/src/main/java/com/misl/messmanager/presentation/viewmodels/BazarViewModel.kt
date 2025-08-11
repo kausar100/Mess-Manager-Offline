@@ -49,4 +49,10 @@ class BazarViewModel @Inject constructor(
             repository.addBazar(newBazar)
         }
     }
+
+    fun deleteBazar(bazar: Bazar) {
+        viewModelScope.launch {
+            repository.deleteBazar(bazar)
+        }
+    }
 }

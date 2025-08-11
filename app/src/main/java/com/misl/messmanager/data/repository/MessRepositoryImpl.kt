@@ -25,6 +25,9 @@ class MessRepositoryImpl @Inject constructor(
 
     override suspend fun deleteMember(member: Member) = dao.deleteMember(member)
 
+    override suspend fun deleteBazar(bazar: Bazar) = dao.deleteBazar(bazar)
+
+
     override suspend fun updateMember(member: Member) = dao.updateMember(member)
     override suspend fun addDeposit(deposit: Deposit) = dao.insertDeposit(deposit)
     override fun getDepositsForMember(memberId: Int): Flow<List<Deposit>> = dao.getDepositsForMember(memberId)

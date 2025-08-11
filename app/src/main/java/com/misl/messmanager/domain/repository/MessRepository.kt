@@ -29,6 +29,8 @@ interface MessRepository {
     fun getTotalBazarForMonth(monthYear: String): Flow<Double?>
     suspend fun addBazar(bazar: Bazar)
 
+    suspend fun deleteBazar(bazar: Bazar)
+
     // Meal functions
     fun getMealsForDate(date: String): Flow<List<Meal>>
     fun getTotalMealsForMemberInMonth(memberId: Int, monthYear: String): Flow<Double?>

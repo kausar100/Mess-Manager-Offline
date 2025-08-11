@@ -14,6 +14,9 @@ interface MessDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMember(member: Member): Long
 
+    @Delete
+    suspend fun deleteBazar(bazar: Bazar)
+
 
     // 2. Create a new @Transaction function
     @Transaction

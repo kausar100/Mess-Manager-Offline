@@ -8,10 +8,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,6 +32,7 @@ fun BazarScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+    var bazarToDelete by remember { mutableStateOf<Bazar?>(null) }
 
     Scaffold(
         topBar = {
@@ -64,7 +67,8 @@ fun BazarScreen(
                     items = state.bazarList,
                     key = { bazarItem -> bazarItem.id } // <-- ADD THIS KEY PARAMETER
                 ) { bazarItem ->
-                    BazarListItem(item = bazarItem)
+                    BazarListItem(item = bazarItem,                         onDeleteClick = { bazarToDelete = bazarItem }
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -77,6 +81,30 @@ fun BazarScreen(
             onConfirm = { amount, description ->
                 viewModel.addBazar(amount, description)
                 showAddDialog = false
+            }
+        )
+    }
+
+    bazarToDelete?.let { bazar ->
+        AlertDialog(
+            onDismissRequest = { bazarToDelete = null },
+            title = { Text("Delete Expense") },
+            text = { Text("Are you sure you want to delete this expense: '${bazar.description}'?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.deleteBazar(bazar)
+                        bazarToDelete = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { bazarToDelete = null }) {
+                    Text("Cancel")
+                }
             }
         )
     }
@@ -106,10 +134,12 @@ fun TotalBazarCard(totalAmount: Double) {
             )
         }
     }
+
+
 }
 
 @Composable
-fun BazarListItem(item: Bazar) {
+fun BazarListItem(item: Bazar, onDeleteClick: () -> Unit) {
     val formattedDate = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault()).format(Date(item.timestamp))
 
     Card(
@@ -131,6 +161,11 @@ fun BazarListItem(item: Bazar) {
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.End
             )
+
+            // Add the delete icon button
+            IconButton(onClick = onDeleteClick) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete Expense", tint = MaterialTheme.colorScheme.error)
+            }
         }
     }
 }
