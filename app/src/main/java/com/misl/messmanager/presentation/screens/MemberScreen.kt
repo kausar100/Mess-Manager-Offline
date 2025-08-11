@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -163,7 +164,6 @@ fun MemberItem(member: Member, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         ListItem(
-            // 1. A leading icon makes the list more engaging
             leadingContent = {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
@@ -171,21 +171,39 @@ fun MemberItem(member: Member, onClick: () -> Unit) {
                     modifier = Modifier.size(40.dp)
                 )
             },
-            // 2. Headline for the most important info (the name)
             headlineContent = {
                 Text(
                     text = member.name,
                     fontWeight = FontWeight.SemiBold
                 )
             },
-            // 3. Supporting text for secondary info
+            // The `supportingContent` now contains a Column for multiple lines
             supportingContent = {
-                Text(
-                    text = "Total Deposit: %.2f Tk".format(member.givenAmount),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Column {
+                    // Line 1: Total Deposit
+                    Text(
+                        text = "Total Deposit: %.2f Tk".format(member.givenAmount),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    // Line 2: Contact Info (only shows if it exists)
+                    if (member.contact.isNotBlank()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Phone,
+                                contentDescription = "Contact",
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = member.contact,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
             },
-            // 4. A trailing icon clearly shows it's a clickable link
             trailingContent = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -216,6 +234,26 @@ fun MemberDetailDialog(
                     state.selectedMember?.name ?: "",
                     style = MaterialTheme.typography.headlineSmall
                 )
+                // Display the contact number with an icon
+                state.selectedMember?.contact?.let { contactNumber ->
+                    if (contactNumber.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Phone,
+                                contentDescription = "Contact",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = contactNumber,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
                 Text(
                     "Total Given: %.2f Tk".format(state.selectedMember?.givenAmount ?: 0.0),
                     style = MaterialTheme.typography.bodyLarge
